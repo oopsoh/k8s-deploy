@@ -39,7 +39,7 @@
     path: "{{ item }}"
     state: directory
   with_list:
-    - "{{ k8s_dir }}"
+    - "{{ k8s_dir }}/kube-apiserver"
     - "{{ k8s_log_dir }}"
 
 - name: 分发dashboard令牌文件
