@@ -1,0 +1,81 @@
+---
+- name: 设置nexus代理
+  import_tasks: yum.yaml
+
+- name: 关闭防火墙
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: 清理防火墙规则
+  iptables:
+    flush: yes
+
+- name: 设置默认转发策略
+  iptables:
+    chain: FORWARD
+    policy: DROP
+
+- name: 策略写入开机加载
+  lineinfile:
+    path: /etc/rc.d/rc.local
+    line: /sbin/iptables -P FORWARD ACCEPT
+    mode: '0755'
+
+- name: 关闭selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: 加载内核模块
+  modprobe: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - br_netfilter
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+
+- name: 优化内核参数
+  template: 
+    src: kubernetes.conf.j2
+    dest: /etc/sysctl.d/kubernetes.conf
+
+- name: 内核参数生效
+  shell: "sysctl -p /etc/sysctl.d/kubernetes.conf"
+
+- name: 关闭无关服务
+  systemd:
+    name: postfix
+    state: stopped
+    enabled: no
+
+- name: 设置系统时区
+  timezone:
+    name: Asia/Shanghai
+
+- name: 配置系统时钟同步
+  template: 
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+  notify:
+    - 重新启动chronyd服务
+
+#- name: 重新启动chronyd
+#  systemd:
+#    name: chronyd
+#    state: restarted
+#    enabled: yes
+
+- name: 设置journal日志
+  import_tasks: journald.yaml
+
+- name: 重新启动所有机器
+  reboot:
+    msg: "reboot after 1m"
+  tags:
+  - reboot

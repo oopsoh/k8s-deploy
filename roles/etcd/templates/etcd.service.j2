@@ -1,0 +1,51 @@
+# WorkingDirectory、--data-dir：指定工作目录和数据目录为 ${ETCD_DATA_DIR}，需在启动服务前创建这个目录；
+# --wal-dir：指定 wal 目录，为了提高性能，一般使用 SSD 或者和 --data-dir 不同的磁盘；
+# --name：指定节点名称，当 --initial-cluster-state 值为 new 时，--name 的参数值必须位于 --initial-cluster 列表中；
+# --cert-file、--key-file：etcd server 与 client 通信时使用的证书和私钥；
+# --trusted-ca-file：签名 client 证书的 CA 证书，用于验证 client 证书；
+# --peer-cert-file、--peer-key-file：etcd 与 peer 通信使用的证书和私钥；
+# --peer-trusted-ca-file：签名 peer 证书的 CA 证书，用于验证 peer 证书；
+
+
+
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+Documentation=https://github.com/coreos
+
+[Service]
+Type=notify
+WorkingDirectory={{ etcd_work_dir }}
+ExecStart=/opt/k8s/bin/etcd \
+  --data-dir={{ etcd_data_dir }} \
+  --wal-dir={{ etcd_wal_dir }} \
+  --name={{ node_name }} \
+  --cert-file=/etc/kubernetes/cert/etcd.pem \
+  --key-file=/etc/kubernetes/cert/etcd-key.pem \
+  --trusted-ca-file=/etc/kubernetes/cert/ca.pem \
+  --peer-cert-file=/etc/kubernetes/cert/etcd.pem \
+  --peer-key-file=/etc/kubernetes/cert/etcd-key.pem \
+  --peer-trusted-ca-file=/etc/kubernetes/cert/ca.pem \
+  --peer-client-cert-auth=true \
+  --client-cert-auth= true \
+  --listen-peer-urls=https://{{ inventory_hostname }}:2380 \
+  --initial-advertise-peer-urls=https://{{ inventory_hostname }}:2380 \
+  --listen-client-urls=https://{{ inventory_hostname }}:2379,http://127.0.0.1:2379 \
+  --advertise-client-urls=https://{{ inventory_hostname }}:2379 \
+  --initial-cluster-token=etcd-cluster-0 \
+  --initial-cluster={{ etcd_nodes }} \
+  --initial-cluster-state=new \
+  --auto-compaction-mode=periodic \
+  --auto-compaction-retention=1 \
+  --max-request-bytes=33554432 \
+  --quota-backend-bytes=6442450944 \
+  --heartbeat-interval=250 \
+  --election-timeout=2000
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

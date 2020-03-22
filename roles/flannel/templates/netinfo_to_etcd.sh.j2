@@ -1,0 +1,7 @@
+#!/bin/bash
+/opt/k8s/bin/etcdctl \
+  --endpoints={{ etcd_endpoints }} \
+  --ca-file=/opt/k8s/work/ca.pem \
+  --cert-file=/opt/k8s/work/flanneld.pem \
+  --key-file=/opt/k8s/work/flanneld-key.pem \
+  set {{ flannel_etcd_prefix }}/config '{"Network":"{{ cluster_cidr }}", "SubnetLen": 24, "Backend": {"Type": "vxlan"}}'

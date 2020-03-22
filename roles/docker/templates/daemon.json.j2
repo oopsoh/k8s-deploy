@@ -1,0 +1,16 @@
+{
+    "registry-mirrors": ["{{ registry_mirrors }}"],
+    "insecure-registries": ["{{ insecure_registries }}"],
+    "max-concurrent-downloads": 20,
+    "live-restore": true,
+    "max-concurrent-uploads": 10,
+    "debug": true,
+    "data-root": "{{ docker_data_dir }}",
+    "exec-root": "{{ docker_exec_dir }}",
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "100m",
+      "max-file": "5"
+    }
+}

@@ -1,0 +1,45 @@
+---
+
+- name: 分发二进制文件kubectl
+  copy:
+    src: "{{ k8s_deploy_path }}/bin/{{ k8s_version }}/kubectl"
+    dest: /opt/k8s/bin/kubectl
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: 生成admin证书和私钥
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes admin-csr.json | /opt/k8s/bin/cfssljson -bare admin"
+  args:
+    chdir: /opt/k8s/work/
+    creates: admin.pem
+    warn: no
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 创建 kubeconfig 文件 -- 设置集群参数
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/opt/k8s/work/ca.pem --embed-certs=true --server=https://{{ k8s_api_server }}:6443 --kubeconfig=kubectl.kubeconfig"
+  args:
+    chdir: /opt/k8s/work/
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 创建 kubeconfig 文件 -- 设置客户端认证参数
+  shell: "/opt/k8s/bin/kubectl config set-credentials admin --client-certificate=/opt/k8s/work/admin.pem --client-key=/opt/k8s/work/admin-key.pem --embed-certs=true --kubeconfig=kubectl.kubeconfig"
+  args:
+    chdir: /opt/k8s/work/
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 创建 kubeconfig 文件 -- 设置上下文参数
+  shell: "/opt/k8s/bin/kubectl config set-context kubernetes --cluster=kubernetes --user=admin --kubeconfig=kubectl.kubeconfig"
+  args:
+    chdir: /opt/k8s/work/
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 创建存放 kubeconfig 默认目录
+  file:
+    path: /root/.kube
+    state: directory
+
+- name: 分发 kubeconfig 文件
+  copy:
+    src: "/opt/k8s/work/kubectl.kubeconfig"
+    dest: /root/.kube/config

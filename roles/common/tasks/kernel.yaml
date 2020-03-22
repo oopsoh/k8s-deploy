@@ -1,0 +1,13 @@
+--- 
+# CentOS 7.x 系统自带的 3.10.x 内核存在一些 Bugs，导致运行的 Docker、Kubernetes 不稳定，例如：
+
+# 1.高版本的 docker(1.13 以后) 启用了 3.10 kernel 实验支持的 kernel memory account 功能(无法关闭)，当节点压力大如频繁启动和停止容器时会导致 cgroup memory leak；
+# 2.网络设备引用计数泄漏，会导致类似于报错："kernel:unregister_netdevice: waiting for eth0 to become free. Usage count = 1";
+# 解决方案如下：
+
+#   1.升级内核到 4.4.X 以上；
+#   2.或者，手动编译内核，disable CONFIG_MEMCG_KMEM 特性；
+#   3.或者，安装修复了该问题的 Docker 18.09.1 及以上的版本。但由于 kubelet 也会设置 kmem（它 vendor 了 runc）,
+#     所以需要重新编译 kubelet 并指定 [GOFLAGS="-tags=nokmem"]
+- name: 升级内核
+   

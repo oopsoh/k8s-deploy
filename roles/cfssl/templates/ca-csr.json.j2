@@ -1,0 +1,19 @@
+{
+  "CN": "kubernetes-ca",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "{{ country }}",
+      "ST": "{{ state }}",
+      "L": "{{ locality }}",
+      "O": "{{ organization }}",
+      "OU": "{{ unit }}"
+    }
+  ],
+  "ca": {
+    "expiry": "{{ ca_signing_expiry }}"
+ }
+}

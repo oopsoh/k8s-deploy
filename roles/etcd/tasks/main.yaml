@@ -1,0 +1,39 @@
+---
+
+- name: 分发etcd二进制文件
+  copy:
+    src: "{{ k8s_deploy_path }}/bin/etcd/"
+    dest: /opt/k8s/bin/
+    mode: '0755'
+
+- name: 生成etcd证书和私钥
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes etcd-csr.json | /opt/k8s/bin/cfssljson -bare etcd"
+  args:
+    chdir: /opt/k8s/work/
+    creates: etcd.pem
+#  ignore_errors: true
+  when: 'inventory_hostname == hostvars[groups.master[0]]['ansible_host']'
+
+- name: 分发生成的证书和私钥
+  copy:
+    src: "/opt/k8s/work/{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+  with_list:
+    - etcd.pem
+    - etcd-key.pem
+
+- name: 创建etcd需要的目录
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_list:
+    - /var/lib/etcd
+    - /data/k8s/etcd/data
+    - /data/k8s/etcd/wal
+
+- name: 分发etcd.service文件
+  template: 
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+  notify:
+    - 重新启动etcd服务

@@ -1,0 +1,18 @@
+---
+# etcd 集群间通信的IP和端口, 根据etcd组成员自动生成
+tmp_nodes: "{% for h in groups['etcd'] %}{{ hostvars[h]['node_name'] }}=https://{{ h }}:2380,{% endfor %}"
+etcd_nodes: "{{ tmp_nodes.rstrip(',') }}"
+
+# etcd 集群服务地址列表
+t_nodes: "{% for h in groups['etcd'] %}https://{{ h }}:2379,{% endfor %}"
+etcd_endpoints: "{{ t_nodes.rstrip(',') }}"
+
+# 节点间互联网络接口名称
+flannel_iface: eth0  
+
+# flannel 存储在 etcd 中的网络配置前缀
+flannel_etcd_prefix: /kubernetes/network
+
+# Pod 网段，建议 /16 段地址，部署前路由不可达，部署后集群内路由可达(flanneld 保证)
+cluster_cidr: "172.30.0.0/16"
+

@@ -1,0 +1,46 @@
+---
+
+- name: 分发flannel二进制文件
+  copy:
+    src: "{{ k8s_deploy_path }}/bin/flannel/"
+    dest: /opt/k8s/bin/
+    mode: '0755'
+
+- name: 生成 flannel 证书和私钥
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes flanneld-csr.json | /opt/k8s/bin/cfssljson -bare flanneld"
+  args:
+    chdir: /opt/k8s/work/
+    creates: flanneld.pem
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 分发 flannel 证书文件
+  copy:
+    src: "/opt/k8s/work/{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+  with_list:
+    - flanneld.pem
+    - flanneld-key.pem
+
+- name: 生成向 etcd 写入集群 Pod 网段信息脚本
+  template: 
+    src: netinfo_to_etcd.sh.j2
+    dest: /tmp/netinfo_to_etcd.sh
+    owner: root
+    group: root
+    mode: '0755'
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 执行脚本
+  shell: /tmp/netinfo_to_etcd.sh
+  args:
+    creates: /etc/systemd/system/flanneld.service
+    executable: /bin/bash
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 分发 flanneld.service 文件
+  template: 
+    src: flanneld.service.j2
+    dest: /etc/systemd/system/flanneld.service
+  notify:
+    - 重新启动 flanneld 服务

@@ -1,0 +1,29 @@
+---
+# systemd 的 journald 是 Centos 7 缺省的日志记录工具，它记录了所有系统、内核、Service Unit 的日志。
+
+# 相比 systemd，journald 记录的日志有如下优势：
+
+# 1.可以记录到内存或文件系统；(默认记录到内存，对应的位置为 /run/log/jounal)；
+# 2.可以限制占用的磁盘空间、保证磁盘剩余空间；
+# 3.可以限制日志文件大小、保存的时间；
+# journald 默认将日志转发给 rsyslog，这会导致日志写了多份，/var/log/messages 中包含了太多无关日志，不方便后续查看，同时也影响系统性能。
+- name: 创建持久化保存journal日志的目录
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_list:
+    - /var/log/journal
+    - /etc/systemd/journald.conf.d
+
+- name: 设置journald配置文件
+  template: 
+    src: journald.conf.j2
+    dest: /etc/systemd/journald.conf.d/journald.conf
+  notify:
+    - 重新启动systemd-journald服务
+
+#- name: 重新启动systemd-journald
+#  systemd:
+#    name: systemd-journald
+#    state: restarted
+

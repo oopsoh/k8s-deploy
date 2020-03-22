@@ -1,0 +1,16 @@
+---
+# CA 证书参数
+ca_signing_expiry: "87600h"
+ca_expiry: "87600h"
+
+# CSR请求参数
+# 国家缩写
+country: "CN"
+# 所在城市
+locality: "Beijing"
+# 所在省份
+state: "Beijing"
+# 所在组织
+organization: "ABB"
+# 所在部门
+unit: "PGGA"

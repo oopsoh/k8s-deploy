@@ -1,0 +1,73 @@
+- name: 创建yum备份文件夹
+  file:
+    path: /etc/yum.repos.d/bak
+    state: directory
+
+- name: 备份系统自带的yum源
+  shell: "mv *.repo ./bak/"
+  args:
+    chdir: /etc/yum.repos.d/
+    creates: nexus.repo
+  ignore_errors: true
+
+- name: 配置nexus centos-base 代理
+  yum_repository:
+    name: centos-base
+    description: Nexus Centos Base Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/os/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-updates 代理
+  yum_repository:
+    name: centos-updates
+    description: Nexus Centos Updates Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/updates/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-extras  代理
+  yum_repository:
+    name: centos-extras
+    description: Nexus Centos Extras Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/extras/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-epel 代理
+  yum_repository:
+    name: centos-epel
+    description: Nexus Centos EPEL Repository
+    file: nexus
+    baseurl: "{{ nexus_epel_url }}7/$basearch/"
+    gpgcheck: no
+
+- name: 清空yum缓存
+  command: yum clean metadata
+  args:
+    warn: no
+
+- name: 安装依赖包
+  yum:
+    name:
+      - chrony
+      - conntrack
+      - ipvsadm
+      - ipset
+      - jq
+      - iptables
+      - curl
+      - sysstat
+      - libseccomp
+      - wget
+      - socat
+      - vim
+      - bash-completion
+      - psmisc
+      - "@Development tools"
+      - unzip
+      - lrzsz
+    state: present
