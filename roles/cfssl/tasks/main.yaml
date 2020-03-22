@@ -54,6 +54,7 @@
     - { src: 'flanneld-csr.json.j2', dest: 'flanneld-csr.json' }
     - { src: 'kubernetes-csr.json.j2', dest: 'kubernetes-csr.json' }
     - { src: 'aggregator-csr.json.j2', dest: 'aggregator-csr.json' }
+    - { src: 'kube-controller-manager-csr.json.j2', dest: 'kube-controller-manager-csr.json' }
   tags:
   - csr
   when: 'inventory_hostname == groups.master[0]'

@@ -1,0 +1,22 @@
+{
+    "CN": "system:kube-controller-manager",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "hosts": [
+{% for host in groups['master'] %}
+    "{{ hostvars[host]['ansible_host'] }}",
+{% endfor %}
+    "127.0.0.1",
+    ],
+    "names": [
+      {
+        "C": "{{ country }}",
+        "ST": "{{ state }}",
+        "L": "{{ locality }}",
+        "O": "system:kube-controller-manager",
+        "OU": "{{ unit }}"
+      }
+    ]
+}
