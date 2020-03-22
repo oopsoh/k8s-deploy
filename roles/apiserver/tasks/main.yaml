@@ -1,10 +1,10 @@
 ---
 
 - name: 生成kubernetes证书和私钥
-  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes kubernetes-csr.json | /opt/k8s/bin/cfssljson -bare kubernetes"
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes apiserver-csr.json | /opt/k8s/bin/cfssljson -bare apiserver"
   args:
     chdir: /opt/k8s/work/
-    creates: kubernetes.pem
+    creates: apiserver.pem
 #  ignore_errors: true
   when: 'inventory_hostname == groups.master[0]'
 
@@ -21,8 +21,8 @@
     src: "/opt/k8s/work/{{ item }}"
     dest: "/etc/kubernetes/cert/{{ item }}"
   with_list:
-    - kubernetes.pem
-    - kubernetes-key.pem
+    - apiserver.pem
+    - apiserver-key.pem
     - aggregator.pem
     - aggregator-key.pem
 
