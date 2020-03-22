@@ -1,0 +1,57 @@
+---
+
+- name: 生成kubernetes证书和私钥
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes kubernetes-csr.json | /opt/k8s/bin/cfssljson -bare kubernetes"
+  args:
+    chdir: /opt/k8s/work/
+    creates: kubernetes.pem
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 后续访问 metrics-server 或 kube-prometheus 使用的证书
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes aggregator-csr.json | /opt/k8s/bin/cfssljson -bare aggregator"
+  args:
+    chdir: /opt/k8s/work/
+    creates: aggregator.pem
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 分发生成的证书和私钥
+  copy:
+    src: "/opt/k8s/work/{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+  with_list:
+    - kubernetes.pem
+    - kubernetes-key.pem
+    - aggregator.pem
+    - aggregator-key.pem
+
+- name: 分发加密和审计配置文件
+  template: 
+    src: "{{ item.src }}"
+    dest: "/etc/kubernetes/{{ item.dest }}"
+  loop:
+    - { src: 'encryption-config.yaml.j2', dest: 'encryption-config.yaml' }
+    - { src: 'audit-policy.yaml.j2', dest: 'audit-policy.yaml' }
+
+- name: 创建目录
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_list:
+    - "{{ k8s_dir }}"
+    - "{{ k8s_log_dir }}"
+
+- name: 分发dashboard令牌文件
+  copy:
+    src: basic_auth
+    dest: /etc/kubernetes/basic_auth
+
+- name: 分发kube-apiserver.service文件
+  template: 
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+#  notify:
+#    - 重新启动kube-apiserver.service服务
+
+

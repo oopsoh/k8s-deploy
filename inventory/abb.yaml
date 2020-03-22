@@ -7,6 +7,11 @@ master1.localdomain ansible_host=192.168.0.150
 master2.localdomain ansible_host=192.168.0.151
 master3.localdomain ansible_host=192.168.0.152
 
+[master:vars]
+# k8s 各组件数据目录
+k8s_dir=/data/k8s/k8s
+
+
 [worker]
 node1.localdomain ansible_host=192.168.0.153
 node2.localdomain ansible_host=192.168.0.154
@@ -44,7 +49,7 @@ nexus_epel_url=http://192.168.0.120:8081/repository/epel/
 k8s_deploy_path=/root/k8s-deploy
 
 # bin文件中对应的k8s版本
-k8s_version=1.16.6
+k8s_version=1.15.11
 
 # k8s api-server地址
 k8s_api_server=master1.localdomain

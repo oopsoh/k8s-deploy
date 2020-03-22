@@ -52,6 +52,8 @@
     - { src: 'admin-csr.json.j2', dest: 'admin-csr.json' }
     - { src: 'etcd-csr.json.j2', dest: 'etcd-csr.json' }
     - { src: 'flanneld-csr.json.j2', dest: 'flanneld-csr.json' }
+    - { src: 'kubernetes-csr.json.j2', dest: 'kubernetes-csr.json' }
+    - { src: 'aggregator-csr.json.j2', dest: 'aggregator-csr.json' }
   tags:
   - csr
   when: 'inventory_hostname == groups.master[0]'

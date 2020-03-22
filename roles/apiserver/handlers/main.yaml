@@ -1,0 +1,8 @@
+---
+
+- name: 重新启动kube-apiserver.service服务
+  systemd:
+    name: kube-apiserver
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
