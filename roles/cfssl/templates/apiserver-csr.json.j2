@@ -1,5 +1,5 @@
 {
-  "CN": "kubernetes-master",
+  "CN": "system:apiserver",
   "hosts": [
 {% for host in groups['master'] %}
     "{{ hostvars[host]['ansible_host'] }}",
@@ -21,7 +21,7 @@
       "C": "{{ country }}",
       "ST": "{{ state }}",
       "L": "{{ locality }}",
-      "O": "{{ organization }}",
+      "O": "system:masters",
       "OU": "{{ unit }}"
     }
   ]
