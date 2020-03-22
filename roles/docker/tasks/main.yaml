@@ -12,13 +12,13 @@
     dest: /etc/systemd/system/docker.service
 
 - name: 创建配置文件目录
-    file:
+  file:
     path: "{{ item }}"
     state: directory
   with_list:
     - /etc/docker
-    - {{ docker_data_dir }}
-    - {{ docker_exec_dir }}
+    - "{{ docker_data_dir }}"
+    - "{{ docker_exec_dir }}"
 
 - name: 分发daemon.json配置文件
   template: 
@@ -26,6 +26,3 @@
     dest: /etc/docker/daemon.json
   notify:
     - 重新启动docker服务
-
-
-ahck8s.azurecr.io/apm-asset-issue-service:20200204.1-5.3.0.0

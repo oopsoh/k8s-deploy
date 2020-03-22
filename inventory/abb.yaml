@@ -13,7 +13,10 @@ node2.localdomain ansible_host=192.168.0.154
 node3.localdomain ansible_host=192.168.0.155
 
 [worker:vars]
-# docker 工作目录
+# docker 目录
+docker_dir=/data/k8s/docker
+
+# docker 数据目录
 docker_data_dir=/data/k8s/docker/data
 
 # docker 运行目录
