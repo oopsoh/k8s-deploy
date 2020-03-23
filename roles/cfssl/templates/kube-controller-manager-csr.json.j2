@@ -8,7 +8,8 @@
 {% for host in groups['master'] %}
     "{{ hostvars[host]['ansible_host'] }}",
 {% endfor %}
-    "127.0.0.1",
+    "{{ master_vip }}",
+    "127.0.0.1"
     ],
     "names": [
       {

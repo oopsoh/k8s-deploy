@@ -51,8 +51,11 @@ k8s_deploy_path=/root/k8s-deploy
 # bin文件中对应的k8s版本
 k8s_version=1.15.11
 
-# k8s api-server地址
-k8s_api_server=master1.localdomain
+# kube-apiserver 的 VIP（HA 组件 keepalived 发布的 IP）
+master_vip=192.168.0.149
+# kube-apiserver VIP 地址（HA 组件 haproxy 监听 8443 端口）
+kube_apiserver=https://192.168.0.149:8443
+
 
 
 [etcd]
@@ -69,6 +72,17 @@ etcd_data_dir=/data/k8s/etcd/data
 
 # etcd WAL目录
 etcd_wal_dir=/data/k8s/etcd/wal
+
+[lb]
+#运行 keepalived 和 haproxy 的节点称为 LB 节点。由于 keepalived 是一主多备运行模式，故至少两个 LB 节点。
+master1.localdomain ansible_host=192.168.0.150
+master2.localdomain ansible_host=192.168.0.151
+master3.localdomain ansible_host=192.168.0.152
+
+lb_iface=etho
+master_vip=192.168.0.149
+
+
 
 
 

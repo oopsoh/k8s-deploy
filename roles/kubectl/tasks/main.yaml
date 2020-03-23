@@ -19,7 +19,7 @@
   when: 'inventory_hostname == groups.master[0]'
 
 - name: 创建 kubeconfig 文件 -- 设置集群参数
-  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/opt/k8s/work/ca.pem --embed-certs=true --server=https://{{ k8s_api_server }}:6443 --kubeconfig=kubectl.kubeconfig"
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/opt/k8s/work/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=kubectl.kubeconfig"
   args:
     chdir: /opt/k8s/work/
   when: 'inventory_hostname == groups.master[0]'
