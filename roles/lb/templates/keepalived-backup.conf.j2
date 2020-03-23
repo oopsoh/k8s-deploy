@@ -7,7 +7,7 @@ global_defs {
 vrrp_script check-haproxy {
     script "/usr/bin/killall -0 haproxy"
     interval 5
-    weight -60
+    weight -20
 }
 
 vrrp_instance VI-kube-master {

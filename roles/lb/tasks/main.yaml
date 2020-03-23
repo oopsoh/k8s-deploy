@@ -1,18 +1,9 @@
 ---
 
-- name: 安装haproxy和keepalived
+- name: 安装keepalived
   yum:
-    name: 
-      - haproxy
-      - keepalived
+    name: keepalived
     state: present
-
-- name: 分发配置文件
-  template: 
-    src: haproxy.cfg.j2
-    dest: /etc/haproxy/haproxy.cfg
-  notify:
-    - 重新启动haproxy服务
 
 - name: 下发keepalived master配置文件
   template: 
@@ -28,4 +19,4 @@
     dest: /etc/keepalived/keepalived.conf
   notify:
     - 重新启动keepalived服务
-  when: 'inventory_hostname != groups.lb[0]'
+  when: 'inventory_hostname == groups.lb[1]'

@@ -1,11 +1,5 @@
 ---
 
-- name: 重新启动haproxy服务
-  systemd:
-    name: haproxy
-    state: restarted
-    enabled: yes
-
 - name: 重新启动keepalived服务
   systemd:
     name: keepalived
