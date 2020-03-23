@@ -70,4 +70,5 @@
       - "@Development tools"
       - unzip
       - lrzsz
+      - net-tools
     state: present
