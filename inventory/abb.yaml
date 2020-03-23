@@ -79,6 +79,7 @@ master1.localdomain ansible_host=192.168.0.150
 master2.localdomain ansible_host=192.168.0.151
 master3.localdomain ansible_host=192.168.0.152
 
+[lb:vars]
 lb_iface=etho
 master_vip=192.168.0.149
 
