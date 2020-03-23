@@ -1,18 +1,18 @@
 global_defs {
-    router_id lb-master-105
+    router_id {{ inventory_hostname }}
     script_user root
     enable_script_security
 }
 
 vrrp_script check-haproxy {
-    script "killall -0 haproxy"
+    script "/usr/bin/killall -0 haproxy"
     interval 5
-    weight -30
+    weight -60
 }
 
 vrrp_instance VI-kube-master {
     state MASTER
-    priority 120
+    priority {{ hostvars[inventory_hostname]['priority'] }}
     dont_track_primary
     interface {{ lb_iface }}
     virtual_router_id 68
