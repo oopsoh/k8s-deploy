@@ -25,6 +25,8 @@
     - apiserver-key.pem
     - aggregator.pem
     - aggregator-key.pem
+  notify:
+    - 重新启动kube-apiserver.service服务
 
 - name: 分发加密和审计配置文件
   template: 
