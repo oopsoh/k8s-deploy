@@ -1,8 +1,10 @@
 ---
 
-- name: 安装haproxy
+- name: 安装haproxy和keepalived
   yum:
-    name: haproxy
+    name: 
+      - haproxy
+      - keepalived
     state: present
 
 - name: 分发配置文件
