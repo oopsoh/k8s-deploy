@@ -6,8 +6,9 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 WorkingDirectory={{ k8s_dir }}/kube-controller-manager
 ExecStart=/opt/k8s/bin/kube-controller-manager \
   --profiling \
+  --bind-address=127.0.0.1 \
   --port=0 \
-  --secure-port=10257 \
+  --secure-port=10252 \
   --cluster-name=kubernetes \
   --controllers=*,bootstrapsigner,tokencleaner \
   --kube-api-qps=1000 \
@@ -15,7 +16,6 @@ ExecStart=/opt/k8s/bin/kube-controller-manager \
   --leader-elect \
   --use-service-account-credentials \
   --concurrent-service-syncs=2 \
-  --bind-address={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} \
   --tls-cert-file=/etc/kubernetes/cert/kube-controller-manager.pem \
   --tls-private-key-file=/etc/kubernetes/cert/kube-controller-manager-key.pem \
   --authentication-kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig \
