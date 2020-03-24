@@ -36,8 +36,8 @@ docker_exec_dir=/data/k8s/docker/exec
 # registry-mirrors
 registry_mirrors="https://c54hhh4b.mirror.aliyuncs.com"
 
-# insecure-registries
-insecure_registries="192.168.0.120:8082"
+# insecure-registries. docker group
+insecure_registries="192.168.0.120:8083"
 
 
 [k8s_cluster:children]
