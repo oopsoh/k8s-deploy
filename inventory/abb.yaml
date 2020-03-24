@@ -10,6 +10,10 @@ master3.localdomain ansible_host=192.168.0.152
 [master:vars]
 # k8s 各组件数据目录
 k8s_dir=/data/k8s/k8s
+# 服务网段，部署前路由不可达，部署后集群内路由可达(kube-proxy 保证)
+service_cidr=10.254.0.0/16
+# kube-apiserver VIP 地址（HA 组件 haproxy 监听 8443 端口）
+kube_apiserver=https://192.168.0.149:8443
 
 
 [worker]
