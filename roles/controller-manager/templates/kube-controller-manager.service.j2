@@ -6,7 +6,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 WorkingDirectory={{ k8s_dir }}/kube-controller-manager
 ExecStart=/opt/k8s/bin/kube-controller-manager \
   --profiling \
-  --bind-address=0.0.0.0 \
+  --bind-address=127.0.0.1 \
   --port=0 \
   --secure-port=10252 \
   --cluster-name=kubernetes \
