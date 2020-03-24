@@ -32,6 +32,7 @@ ExecStart=/opt/k8s/bin/kube-controller-manager \
   --concurrent-deployment-syncs=10 \
   --concurrent-gc-syncs=30 \
   --node-cidr-mask-size=24 \
+  --cluster-cidr={{ cluster_cidr }} \
   --allocate-node-cidrs=true \
   --service-cluster-ip-range={{ service_cidr }} \
   --pod-eviction-timeout=6m \

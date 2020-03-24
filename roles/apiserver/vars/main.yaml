@@ -7,9 +7,6 @@ encryption_key: YxrMwMcMfduUDNq+7wTw6DkVZfLFCAiq4Hg43HGYcFc=
 t_nodes: "{% for h in groups['etcd'] %}https://{{ h }}:2379,{% endfor %}"
 etcd_endpoints: "{{ t_nodes.rstrip(',') }}"
 
-# 服务网段，部署前路由不可达，部署后集群内路由可达(kube-proxy 保证)
-service_cidr: 10.254.0.0/16
-
 # 服务端口范围 (NodePort Range)
 node_port_range: 30000-32767
 
