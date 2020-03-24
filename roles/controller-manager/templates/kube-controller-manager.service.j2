@@ -7,8 +7,8 @@ WorkingDirectory={{ k8s_dir }}/kube-controller-manager
 ExecStart=/opt/k8s/bin/kube-controller-manager \
   --profiling \
   --bind-address=127.0.0.1 \
-  --port=0 \
-  --secure-port=10252 \
+  --port=10252 \
+  --secure-port=10257 \
   --cluster-name=kubernetes \
   --controllers=*,bootstrapsigner,tokencleaner \
   --kube-api-qps=1000 \
