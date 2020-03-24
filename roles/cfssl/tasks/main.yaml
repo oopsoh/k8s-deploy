@@ -55,6 +55,7 @@
     - { src: 'apiserver-csr.json.j2', dest: 'apiserver-csr.json' }
     - { src: 'aggregator-csr.json.j2', dest: 'aggregator-csr.json' }
     - { src: 'kube-controller-manager-csr.json.j2', dest: 'kube-controller-manager-csr.json' }
+    - { src: 'kube-scheduler-csr.json.j2', dest: 'kube-scheduler-csr.json' }
   tags:
   - csr
   when: 'inventory_hostname == groups.master[0]'

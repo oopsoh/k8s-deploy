@@ -1,0 +1,23 @@
+{
+    "CN": "system:kube-scheduler",
+      "hosts": [
+{% for host in groups['master'] %}
+    "{{ hostvars[host]['ansible_host'] }}",
+{% endfor %}
+    "{{ master_vip }}",
+    "127.0.0.1"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+      {
+        "C": "{{ country }}",
+        "ST": "{{ state }}",
+        "L": "{{ locality }}",
+        "O": "system:kube-scheduler",
+        "OU": "{{ unit }}"
+      }
+    ]
+}
