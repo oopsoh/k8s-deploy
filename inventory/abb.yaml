@@ -14,6 +14,8 @@ k8s_dir=/data/k8s/k8s
 service_cidr=10.254.0.0/16
 # kube-apiserver VIP 地址（HA 组件 haproxy 监听 8443 端口）
 kube_apiserver=https://192.168.0.149:8443
+# k8s日志目录
+k8s_log_dir=/var/log/kubernetes
 
 
 [worker]

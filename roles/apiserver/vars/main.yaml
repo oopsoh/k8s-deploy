@@ -10,9 +10,6 @@ etcd_endpoints: "{{ t_nodes.rstrip(',') }}"
 # 服务端口范围 (NodePort Range)
 node_port_range: 30000-32767
 
-# k8s日志目录
-k8s_log_dir: /var/log/kubernetes
-
 
 
 
