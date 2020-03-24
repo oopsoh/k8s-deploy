@@ -6,7 +6,8 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 WorkingDirectory={{ k8s_dir }}/kube-controller-manager
 ExecStart=/opt/k8s/bin/kube-controller-manager \
   --profiling \
-  --secure-port=10252 \
+  --port=0 \\
+  --secure-port=10257 \
   --cluster-name=kubernetes \
   --controllers=*,bootstrapsigner,tokencleaner \
   --kube-api-qps=1000 \
