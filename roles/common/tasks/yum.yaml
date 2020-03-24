@@ -71,4 +71,7 @@
       - unzip
       - lrzsz
       - net-tools
+      - p7zip
+      - p7zip-plugins
+      - telnet
     state: present
