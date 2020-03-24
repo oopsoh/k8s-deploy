@@ -45,6 +45,7 @@
   shell: "/opt/k8s/bin/kubectl config use-context system:kube-controller-manager --kubeconfig=kube-controller-manager.kubeconfig"
   args:
     chdir: /opt/k8s/work/
+  when: 'inventory_hostname == groups.master[0]'
 
 - name: 分发 kube-controller-manager.kubeconfig 文件
   copy:
