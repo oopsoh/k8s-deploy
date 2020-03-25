@@ -74,8 +74,27 @@
 - name: 设置journal日志
   import_tasks: journald.yaml
 
+- name: 创建.pip文件夹
+  file:
+    path: /root/.pip
+    state: directory
+  tags:
+  - pip
+
+- name: 分发pip.conf文件
+  template:
+    src: pip.conf.j2
+    dest: /root/.pip/pip.conf
+  tags:
+  - pip
+
 - name: 重新启动所有机器
   reboot:
     msg: "reboot after 1m"
   tags:
   - reboot
+
+
+
+
+

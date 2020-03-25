@@ -50,11 +50,17 @@ master
 worker
 
 [k8s_cluster:vars]
+# nexus 地址
+nexus_ip=192.168.0.120 
+
 # nexus centos源代理地址
 nexus_base_url=http://192.168.0.120:8081/repository/centos/
 
 # nexus epel源代理地址
 nexus_epel_url=http://192.168.0.120:8081/repository/epel/
+
+# nexus python源代理地址
+nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
 
 # k8s-deploy目录所在目录
 k8s_deploy_path=/root/k8s-deploy
