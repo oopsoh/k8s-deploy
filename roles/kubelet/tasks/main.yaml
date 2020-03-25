@@ -51,3 +51,23 @@
   template: 
     src: kubelet-config.yaml.j2
     dest: /etc/kubernetes/kubelet-config.yaml
+#  notify:
+#    - 重新启动kubelet.service服务
+
+- name: Bootstrap Token Auth 授予权限
+  shell: "/opt/k8s/bin/kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --group=system:bootstrappers"
+  when: 'inventory_hostname == groups.worker[0]'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
