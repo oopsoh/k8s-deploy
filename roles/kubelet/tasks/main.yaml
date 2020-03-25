@@ -5,9 +5,14 @@
     path: "{{ k8s_dir }}/kubelet"
     state: directory
 
+- name: 第一次安装查看是否已经有token了，不要二次执行
+  shell: "/opt/k8s/bin/kubeadm token list"
+  register: bootstrap_token_list
+
 - name: 创建worker节点token
   shell: "/opt/k8s/bin/kubeadm token create --description {{ inventory_hostname_short }}-kubelet-bootstrap-token --groups system:bootstrappers:{{ inventory_hostname_short }} --kubeconfig /root/.kube/config"
   register: bootstrap_token
+  when: '"kubelet-bootstrap-token" not in bootstrap_token_list.stdout' 
 
 - name: 设置kubelet集群参数
   shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=kubelet-bootstrap-{{ inventory_hostname_short }}.kubeconfig"
@@ -38,5 +43,5 @@
 
 - name: 分发kubelet-config.yaml文件
   template: 
-    src: kubelet-config.j2
+    src: kubelet-config.yaml.j2
     dest: /etc/kubernetes/kubelet-config.yaml
