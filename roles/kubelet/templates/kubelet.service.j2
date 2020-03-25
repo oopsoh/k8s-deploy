@@ -7,7 +7,7 @@ Requires=docker.service
 [Service]
 WorkingDirectory={{ k8s_dir }}/kubelet
 ExecStart=/opt/k8s/bin/kubelet \
-  --bootstrap-kubeconfig=/etc/kubernetes/kubelet-bootstrap.kubeconfig \
+  --bootstrap-kubeconfig=/etc/kubernetes/kubelet-bootstrap-{{ inventory_hostname_short }}.kubeconfig \
   --cert-dir=/etc/kubernetes/cert \
   --container-runtime=docker \
   --container-runtime-endpoint=unix:///var/run/docker.sock \
