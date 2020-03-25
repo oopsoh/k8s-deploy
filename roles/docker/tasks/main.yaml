@@ -27,7 +27,8 @@
   notify:
     - 重新启动docker服务
 
-- meta: flush_handlers
+- name: 强制执行handlers重启docker
+  meta: flush_handlers
 
 - name: 安装docker python sdk
   pip:
