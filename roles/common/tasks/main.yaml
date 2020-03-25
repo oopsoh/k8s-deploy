@@ -78,15 +78,21 @@
   file:
     path: /root/.pip
     state: directory
-  tags:
-  - pip
 
 - name: 分发pip.conf文件
   template:
     src: pip.conf.j2
     dest: /root/.pip/pip.conf
-  tags:
-  - pip
+
+- name: 分发easy_install配置
+  template:
+    src: pydistutils.cfg.j2
+    dest: /root/.pydistutils.cfg
+
+- name: 安装pip
+  easy_install:
+    name: pip
+    state: latest
 
 - name: 重新启动所有机器
   reboot:

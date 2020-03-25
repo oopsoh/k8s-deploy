@@ -74,4 +74,5 @@
       - p7zip
       - p7zip-plugins
       - telnet
+      - python-setuptools
     state: present
