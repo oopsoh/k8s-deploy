@@ -88,15 +88,11 @@
   template:
     src: pydistutils.cfg.j2
     dest: /root/.pydistutils.cfg
-  tags:
-  - ea
 
 - name: 安装pip
   easy_install:
     name: pip
     state: latest
-  tags:
-  - ea
 
 - name: 重新启动所有机器
   reboot:
