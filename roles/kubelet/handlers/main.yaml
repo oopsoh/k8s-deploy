@@ -1,0 +1,8 @@
+---
+
+- name: 重新启动kubelet.service服务
+  systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

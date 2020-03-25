@@ -39,6 +39,11 @@ registry_mirrors="https://c54hhh4b.mirror.aliyuncs.com"
 # insecure-registries. docker group
 insecure_registries="192.168.0.120:8083"
 
+# k8s 各组件数据目录
+k8s_dir=/data/k8s/k8s
+# k8s日志目录
+k8s_log_dir=/var/log/kubernetes
+
 
 [k8s_cluster:children]
 master
