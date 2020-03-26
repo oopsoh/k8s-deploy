@@ -1,15 +1,5 @@
 ---
 
-- name: 分发k8s二进制文件
-  copy:
-    src: "{{ k8s_deploy_path }}/bin/{{ k8s_version }}/"
-    dest: /opt/k8s/bin/
-    owner: root
-    group: root
-    mode: '0755'
-  tags:
-  - bin
-
 - name: 生成admin证书和私钥
   shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes admin-csr.json | /opt/k8s/bin/cfssljson -bare admin"
   args:

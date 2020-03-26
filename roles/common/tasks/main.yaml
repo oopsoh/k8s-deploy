@@ -94,6 +94,16 @@
     name: pip
     state: latest
 
+- name: 分发k8s二进制文件
+  copy:
+    src: "{{ k8s_deploy_path }}/bin/{{ k8s_version }}/"
+    dest: /opt/k8s/bin/
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+  - bin
+
 - name: 重新启动所有机器
   reboot:
     msg: "reboot after 1m"

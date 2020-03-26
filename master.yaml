@@ -3,6 +3,7 @@
 #  become: true
 #  become_method: sudo
   roles:
+    - kubectl
     - apiserver
     - controller-manager
     - scheduler
