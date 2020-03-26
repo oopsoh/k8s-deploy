@@ -58,18 +58,8 @@
     - { src: 'kube-scheduler-csr.json.j2', dest: 'kube-scheduler-csr.json' }
     - { src: 'kube-proxy-csr.json.j2', dest: 'kube-proxy-csr.json' }
   tags:
-  - master-csr
+  - csr
   when: 'inventory_hostname == groups.master[0]'
-
-- name: 生成worker机器上面的证书配置文件
-  template: 
-    src: "{{ item.src }}"
-    dest: "/etc/kubernetes/cert/{{ item.dest }}"
-  loop:
-    - { src: 'kube-proxy-csr.json.j2', dest: 'kube-proxy-csr.json' }
-  tags:
-  - worker-csr
-  when: 'inventory_hostname == groups.worker[0]'
 
 - name: 生成 CA 证书和私钥
   shell: "/opt/k8s/bin/cfssl gencert -initca ca-csr.json | /opt/k8s/bin/cfssljson -bare ca"
@@ -84,7 +74,17 @@
     path: /etc/kubernetes/cert
     state: directory
 
-- name: 分发证书文件
+- name: 生成kube-proxy证书
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes kube-proxy-csr.json | /opt/k8s/bin/cfssljson -bare kube-proxy"
+  args:
+    chdir: /opt/k8s/work/
+    creates: kube-proxy.pem
+#  ignore_errors: true
+  tags:
+  - csr
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 分发ca证书文件
   copy:
     src: "/opt/k8s/work/{{ item }}"
     dest: "/etc/kubernetes/cert/{{ item }}"
@@ -93,4 +93,14 @@
     - ca-config.json
     - ca-key.pem
 
+- name: 分发kube-proxy证书文件到worker节点
+  copy:
+    src: "/opt/k8s/work/{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+  with_list:
+    - kube-proxy.pem
+    - kube-proxy-key.pem
+  tags:
+  - csr
+  when: inventory_hostname in groups.worker
 
