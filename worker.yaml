@@ -1,0 +1,8 @@
+---
+- hosts: worker
+#  become: true
+#  become_method: sudo
+  roles:
+    - docker
+    - kubelet
+    - kube-proxy

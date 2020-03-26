@@ -13,5 +13,8 @@ flannel_iface: eth0
 # flannel 存储在 etcd 中的网络配置前缀
 flannel_etcd_prefix: /kubernetes/network
 
+# Pod 网段，建议 /16 段地址，部署前路由不可达，部署后集群内路由可达(flanneld 保证)
+cluster_cidr: "172.30.0.0/16"
+
 
 

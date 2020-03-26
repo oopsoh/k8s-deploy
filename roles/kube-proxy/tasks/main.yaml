@@ -1,0 +1,61 @@
+---
+
+- name: 创建目录
+  file:
+    path: "{{ k8s_dir }}/kube-proxy"
+    state: directory
+
+- name: 生成证书
+  shell: "/opt/k8s/bin/cfssl gencert -ca=/opt/k8s/work/ca.pem -ca-key=/opt/k8s/work/ca-key.pem -config=/opt/k8s/work/ca-config.json -profile=kubernetes kube-proxy-csr.json | /opt/k8s/bin/cfssljson -bare kube-proxy"
+  args:
+    chdir: /opt/k8s/work/
+    creates: kube-proxy.pem
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 分发生成的证书和私钥
+  copy:
+    src: "/opt/k8s/work/{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+  with_list:
+    - kube-proxy.pem
+    - kube-proxy-key.pem
+  notify:
+    - 重新启动kube-proxy.service服务
+
+- name: 生成kube-proxy.kubeconfig文件 - 1
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server=https://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:6443 --kubeconfig=kube-proxy.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+
+- name: 生成kube-proxy.kubeconfig文件 - 2
+  shell: "/opt/k8s/bin/kubectl config set-credentials kube-proxy --client-certificate=/etc/kubernetes/cert/kube-proxy.pem --client-key=/etc/kubernetes/cert/kube-proxy-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+
+- name: 生成kube-proxy.kubeconfig文件 - 3
+  shell: "/opt/k8s/bin/kubectl config set-context default --cluster=kubernetes --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+
+- name: 设置默认上下文
+  shell: "/opt/k8s/bin/kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+
+- name: 分发kube-proxy-config.yaml文件
+  template: 
+    src: kube-proxy-config.yaml.j2
+    dest: /etc/kubernetes/kube-proxy-config.yaml
+  notify:
+    - 重新启动kube-proxy.service服务
+
+- name: 分发kube-proxy.service文件
+  template: 
+    src: kube-proxy.service.j2
+    dest: /etc/systemd/system/kube-proxy.service
+  notify:
+    - 重新启动kube-proxy.service服务
+
+
+

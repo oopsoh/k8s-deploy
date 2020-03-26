@@ -1,0 +1,21 @@
+---
+# 参考[https://github.com/kubernetes/kubernetes/blob/release-1.14/pkg/proxy/apis/config/types.go]
+
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  burst: 200
+  kubeconfig: "/etc/kubernetes/kube-proxy.kubeconfig"
+  qps: 100
+bindAddress: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+healthzBindAddress: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:10256
+metricsBindAddress: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:10249
+enableProfiling: true
+clusterCIDR: {{ cluster_cidr }}
+hostnameOverride: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+mode: "ipvs"
+iptables:
+  masqueradeAll: false
+ipvs:
+  scheduler: rr
+  excludeCIDRs: []
