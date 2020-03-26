@@ -22,7 +22,6 @@
     - kube-proxy-key.pem
   notify:
     - 重新启动kube-proxy.service服务
-  when: 'inventory_hostname == groups.worker[0]'
 
 - name: 生成kube-proxy.kubeconfig文件 - 1
   shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=kube-proxy.kubeconfig"
