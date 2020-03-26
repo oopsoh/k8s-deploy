@@ -13,7 +13,7 @@ k8s_dir=/data/k8s/k8s
 # 服务网段，部署前路由不可达，部署后集群内路由可达(kube-proxy 保证)
 service_cidr=10.254.0.0/16
 # kube-apiserver VIP 地址（HA 组件 haproxy 监听 8443 端口）
-kube_apiserver=https://192.168.0.149:8443
+# kube_apiserver=https://192.168.0.149:8443
 # k8s日志目录
 k8s_log_dir=/var/log/kubernetes
 
@@ -29,9 +29,6 @@ docker_dir=/data/k8s/docker
 
 # docker 数据目录
 docker_data_dir=/data/k8s/docker/data
-
-# docker 运行目录
-docker_exec_dir=/data/k8s/docker/exec
 
 # registry-mirrors
 registry_mirrors="https://c54hhh4b.mirror.aliyuncs.com"
@@ -62,6 +59,9 @@ nexus_epel_url=http://192.168.0.120:8081/repository/epel/
 # nexus python源代理地址
 nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
 
+# nexus docker源代理地址
+nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
+
 # k8s-deploy目录所在目录
 k8s_deploy_path=/root/k8s-deploy
 
@@ -71,7 +71,7 @@ k8s_version=1.15.11
 # kube-apiserver 的 VIP（HA 组件 keepalived 发布的 IP）
 master_vip=192.168.0.149
 # kube-apiserver VIP 地址（HA 组件 haproxy 监听 8443 端口）
-kube_apiserver=https://192.168.0.149:8443
+# =https://192.168.0.149:8443
 
 
 

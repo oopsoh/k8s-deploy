@@ -13,10 +13,10 @@
 - name: 创建worker节点token
   shell: "/opt/k8s/bin/kubeadm token create --description {{ inventory_hostname_short }}-kubelet-bootstrap-token --groups system:bootstrappers:{{ inventory_hostname_short }} --kubeconfig /root/.kube/config"
   register: bootstrap_token
-  when: '"kubelet-bootstrap-token" not in bootstrap_token_list.stdout' 
+  when: '"kubelet-bootstrap-token" not in bootstrap_token_list.stdout'
 
 - name: 设置kubelet集群参数
-  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=kubelet-bootstrap-{{ inventory_hostname_short }}.kubeconfig"
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server=https://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:6443 --kubeconfig=kubelet-bootstrap-{{ inventory_hostname_short }}.kubeconfig"
   args:
     chdir: /etc/kubernetes/
   when: '"kubelet-bootstrap-token" not in bootstrap_token_list.stdout' 
@@ -39,25 +39,42 @@
     chdir: /etc/kubernetes/
   when: '"kubelet-bootstrap-token" not in bootstrap_token_list.stdout' 
 
-
 - name: 分发kubelet.service文件
   template: 
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
-#  notify:
-#    - 重新启动kubelet.service服务
+  notify:
+    - 重新启动kubelet.service服务
 
 - name: 分发kubelet-config.yaml文件
   template: 
     src: kubelet-config.yaml.j2
     dest: /etc/kubernetes/kubelet-config.yaml
-#  notify:
-#    - 重新启动kubelet.service服务
+  notify:
+    - 重新启动kubelet.service服务
 
 - name: Bootstrap Token Auth 授予权限
   shell: "/opt/k8s/bin/kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --group=system:bootstrappers"
+  when: 'inventory_hostname == groups.worker[0] and "kubelet-bootstrap-token" not in bootstrap_token_list.stdout'
+
+- name: 强制重启kubelet服务
+  meta: flush_handlers
+
+- name: 暂停1分种，等待请求CSR
+  pause:
+    minutes: 1
+
+- name: approve kubelet的 CSR 请求
+  shell: "/opt/k8s/bin/kubectl get csr | grep Pending | awk '{print $1}' | xargs /opt/k8s/bin/kubectl certificate approve"
   when: 'inventory_hostname == groups.worker[0]'
 
+- name: 暂停1分种，等待证书请求
+  pause:
+    minutes: 1
+
+- name: approve kubelet的 证书 请求
+  shell: "/opt/k8s/bin/kubectl get csr | grep Pending | awk '{print $1}' | xargs /opt/k8s/bin/kubectl certificate approve"
+  when: 'inventory_hostname == groups.worker[0]'
 
 
 

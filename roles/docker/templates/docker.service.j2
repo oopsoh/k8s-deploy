@@ -8,7 +8,7 @@ Wants=network-online.target
 WorkingDirectory={{ docker_dir }}
 Environment="PATH=/opt/k8s/bin:/bin:/sbin:/usr/bin:/usr/sbin"
 EnvironmentFile=-/run/flannel/docker
-ExecStart=/opt/k8s/bin/dockerd -H unix:///var/run/docker.sock $DOCKER_NETWORK_OPTIONS
+ExecStart=/opt/k8s/bin/dockerd  $DOCKER_NETWORK_OPTIONS
 ExecReload=/bin/kill -s HUP $MAINPID
 
 Restart=on-failure

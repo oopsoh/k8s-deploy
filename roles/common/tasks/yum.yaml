@@ -45,6 +45,14 @@
     baseurl: "{{ nexus_epel_url }}7/$basearch/"
     gpgcheck: no
 
+- name: 配置nexus docker代理
+  yum_repository:
+    name: docker-ce
+    description: Nexus Docker Repository
+    file: nexus
+    baseurl: "{{ nexus_docker_url }}$basearch/stable"
+    gpgcheck: no
+
 - name: 清空yum缓存
   command: yum clean metadata
   args:
@@ -75,4 +83,7 @@
       - p7zip-plugins
       - telnet
       - python-setuptools
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
     state: present

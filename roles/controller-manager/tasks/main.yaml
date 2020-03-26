@@ -24,33 +24,24 @@
     - 重新启动kube-controller-manager.service服务
 
 - name: 生成kube-controller-manager.kubeconfig文件 - 1
-  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/opt/k8s/work/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=kube-controller-manager.kubeconfig"
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server=https://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:6443 --kubeconfig=kube-controller-manager.kubeconfig"
   args:
-    chdir: /opt/k8s/work/
-  when: 'inventory_hostname == groups.master[0]'
+    chdir: /etc/kubernetes/
 
 - name: 生成kube-controller-manager.kubeconfig文件 - 2
-  shell: "/opt/k8s/bin/kubectl config set-credentials system:kube-controller-manager --client-certificate=/opt/k8s/work/kube-controller-manager.pem --client-key=/opt/k8s/work/kube-controller-manager-key.pem --embed-certs=true --kubeconfig=kube-controller-manager.kubeconfig"
+  shell: "/opt/k8s/bin/kubectl config set-credentials system:kube-controller-manager --client-certificate=/etc/kubernetes/cert/kube-controller-manager.pem --client-key=/etc/kubernetes/cert/kube-controller-manager-key.pem --embed-certs=true --kubeconfig=kube-controller-manager.kubeconfig"
   args:
-    chdir: /opt/k8s/work/
-  when: 'inventory_hostname == groups.master[0]'
+    chdir: /etc/kubernetes/
 
 - name: 生成kube-controller-manager.kubeconfig文件 - 3
   shell: "/opt/k8s/bin/kubectl config set-context system:kube-controller-manager --cluster=kubernetes --user=system:kube-controller-manager --kubeconfig=kube-controller-manager.kubeconfig"
   args:
-    chdir: /opt/k8s/work/
-  when: 'inventory_hostname == groups.master[0]'
+    chdir: /etc/kubernetes/
 
 - name: 设置默认上下文
   shell: "/opt/k8s/bin/kubectl config use-context system:kube-controller-manager --kubeconfig=kube-controller-manager.kubeconfig"
   args:
-    chdir: /opt/k8s/work/
-  when: 'inventory_hostname == groups.master[0]'
-
-- name: 分发 kube-controller-manager.kubeconfig 文件
-  copy:
-    src: "/opt/k8s/work/kube-controller-manager.kubeconfig"
-    dest: /etc/kubernetes/kube-controller-manager.kubeconfig
+    chdir: /etc/kubernetes/
 
 - name: 分发kube-controller-manager.service文件
   template: 

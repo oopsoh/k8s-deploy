@@ -1,5 +1,11 @@
 ---
 
+# - name: 安装docker
+#   yum:
+#     - docker-ce-18.09.9
+#     - docker-ce-cli-18.09.9
+#     - containerd.io
+
 - name: 分发docker二进制文件
   copy:
     src: "{{ k8s_deploy_path }}/bin/docker/"
@@ -18,7 +24,6 @@
   with_list:
     - /etc/docker
     - "{{ docker_data_dir }}"
-    - "{{ docker_exec_dir }}"
 
 - name: 分发daemon.json配置文件
   template: 
