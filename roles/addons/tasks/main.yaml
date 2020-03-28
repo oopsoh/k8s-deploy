@@ -6,4 +6,5 @@
     dest: "/etc/kubernetes/{{ item.dest }}"
   loop:
     - { src: 'coredns.yaml.j2', dest: 'coredns.yaml' }
+    - { src: 'dashboard.yaml.j2', dest: 'dashboard.yaml' }
   when: 'inventory_hostname == groups.master[0]'
