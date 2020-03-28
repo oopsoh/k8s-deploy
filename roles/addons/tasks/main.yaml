@@ -1,0 +1,9 @@
+---
+
+- name: 生成coredns yaml文件
+  template: 
+    src: "{{ item.src }}"
+    dest: "/etc/kubernetes/{{ item.dest }}"
+  loop:
+    - { src: 'coredns.yaml.j2', dest: 'coredns.yaml' }
+  when: 'inventory_hostname == groups.master[0]'

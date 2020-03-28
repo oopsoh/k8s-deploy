@@ -80,8 +80,6 @@
     chdir: /opt/k8s/work/
     creates: kube-proxy.pem
 #  ignore_errors: true
-  tags:
-  - csr
   when: 'inventory_hostname == groups.master[0]'
 
 - name: 分发ca证书文件
@@ -100,7 +98,5 @@
   with_list:
     - kube-proxy.pem
     - kube-proxy-key.pem
-  tags:
-  - csr
   when: inventory_hostname in groups.worker
 

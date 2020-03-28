@@ -50,7 +50,7 @@ worker
 
 [k8s_cluster:vars]
 # nexus 地址
-nexus_ip=192.168.0.120 
+nexus_ip=192.168.0.120
 
 # nexus centos源代理地址
 nexus_base_url=http://192.168.0.120:8081/repository/centos/

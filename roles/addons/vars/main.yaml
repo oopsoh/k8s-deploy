@@ -1,0 +1,5 @@
+# nexus 地址
+nexus_ip: 192.168.0.120
+
+# 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
+cluster_dns_svc_ip: 10.254.0.2
