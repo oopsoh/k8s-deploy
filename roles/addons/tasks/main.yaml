@@ -7,4 +7,5 @@
   loop:
     - { src: 'coredns.yaml.j2', dest: 'coredns.yaml' }
     - { src: 'dashboard.yaml.j2', dest: 'dashboard.yaml' }
+    - { src: 'metrics-server.yaml.j2', dest: 'metrics-server.yaml' }
   when: 'inventory_hostname == groups.master[0]'

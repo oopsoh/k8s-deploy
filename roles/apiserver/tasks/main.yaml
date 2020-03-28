@@ -46,8 +46,11 @@
 
 - name: 分发dashboard令牌文件
   copy:
-    src: basic_auth
-    dest: /etc/kubernetes/basic_auth
+    src: "{{ item.src }}"
+    dest: "/etc/kubernetes/{{ item.dest }}"
+  loop:
+    - { src: 'basic_auth', dest: 'basic_auth' }
+    - { src: 'abac-policy', dest: 'abac-policy' }
 
 - name: 分发kube-apiserver.service文件
   template: 

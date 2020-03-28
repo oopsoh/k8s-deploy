@@ -14,3 +14,10 @@
 
 
 curl -v --user 'admin:admin123' --upload-file ./grafana-5.2.1-1.x86_64.rpm http://192.168.137.124:18081/repository/k8s-local/7/Packages/grafana-5.2.1-1.x86_64.rpm
+
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | (grep admin-user || echo "$_") | awk '{print $1}') | grep token: | awk '{print $2}'
+
+
+kubectl config set-credentials admin --token=
+
+

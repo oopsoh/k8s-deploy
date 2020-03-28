@@ -6,7 +6,7 @@ After=network.target
 [Service]
 WorkingDirectory={{ k8s_dir }}/kube-apiserver
 ExecStart=/opt/k8s/bin/kube-apiserver \
-  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds \
+  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds,NodeRestriction \
   --advertise-address={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} \
   --default-not-ready-toleration-seconds=360 \
   --default-unreachable-toleration-seconds=360 \
@@ -28,20 +28,21 @@ ExecStart=/opt/k8s/bin/kube-apiserver \
   --profiling \
   --anonymous-auth=false \
   --client-ca-file=/etc/kubernetes/cert/ca.pem \
-  --requestheader-allowed-names="aggregator" \
-  --requestheader-client-ca-file=/etc/kubernetes/cert/ca.pem \
-  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
-  --requestheader-group-headers=X-Remote-Group \
-  --requestheader-username-headers=X-Remote-User \
   --service-account-key-file=/etc/kubernetes/cert/ca-key.pem \
   --authorization-mode=Node,RBAC \
+  --authorization_policy_file=/etc/kubernetes/abac_policy \
   --runtime-config=api/all=true \
-  --enable-admission-plugins=NodeRestriction \
   --allow-privileged=true \
   --apiserver-count=3 \
   --event-ttl=168h \
   --enable-bootstrap-token-auth \
   --kubelet-https=true \
+  --enable-aggregator-routing=true \
+  --requestheader-allowed-names="aggregator" \
+  --requestheader-client-ca-file=/etc/kubernetes/cert/ca.pem \
+  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
   --kubelet-timeout=30s \
   --proxy-client-cert-file=/etc/kubernetes/cert/aggregator.pem \
   --proxy-client-key-file=/etc/kubernetes/cert/aggregator-key.pem \

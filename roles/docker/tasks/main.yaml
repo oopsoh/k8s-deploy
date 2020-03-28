@@ -55,6 +55,7 @@
    - coredns:1.3.1
    - dashboard:v2.0.0-beta4
    - metrics-scraper:v1.0.1
+   - metrics-server-amd64:v0.3.6
   tags:
   - images
 
