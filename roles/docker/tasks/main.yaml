@@ -52,7 +52,7 @@
     source: pull
   with_items:
    - pause:3.1
-   - codedns:1.3.1
+   - coredns:1.3.1
    - dashboard:v2.0.0-beta4
    - metrics-scraper:v1.0.1
   tags:
