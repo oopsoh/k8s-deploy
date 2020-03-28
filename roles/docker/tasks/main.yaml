@@ -45,3 +45,22 @@
     username: admin
     password: admin123
     reauthorize: yes
+
+- name: pull an image
+  docker_image:
+    name: ""{{ insecure_registries | regex_replace('"') }}"/{{ item }}"
+    source: pull
+  with_list:
+   - "pause: 3.1"
+   - "codedns: 1.3.1"
+  tags:
+  - image
+
+
+
+
+
+
+
+
+
