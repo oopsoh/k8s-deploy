@@ -8,4 +8,164 @@
     - { src: 'coredns.yaml.j2', dest: 'coredns.yaml' }
     - { src: 'dashboard.yaml.j2', dest: 'dashboard.yaml' }
     - { src: 'metrics-server.yaml.j2', dest: 'metrics-server.yaml' }
+    - { src: 'dashboard-login-admin.yaml.j2', dest: 'dashboard-login-admin.yaml' }
   when: 'inventory_hostname == groups.master[0]'
+
+- name: 检查coredns是否已经部署
+  shell: "/opt/k8s/bin/kubectl get pods -n kube-system | grep -c -i coredns"
+  register: coredns_count
+  failed_when: "coredns_count.rc != 0"
+  when:
+    - groups['master'][0] == inventory_hostname
+
+- name: coredns的pod个数
+  debug:
+    msg: "coredns: {{ coredns_count }}"
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 执行 coredns.yml
+  shell: "/opt/k8s/bin/kubectl apply -f /etc/kubernetes/coredns.yml"
+  when:
+    - groups['master'][0] == inventory_hostname
+    - coredns_count.stdout_lines[0]|int == 0
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 检查kubernetes-dashboard是否已经部署
+  shell: "/opt/k8s/bin/kubectl get pods -n kubernetes-dashboard | grep -c -i dashboard"
+  register: dashboard_count
+  failed_when: "dashboard_count.rc != 0"
+  when:
+    - groups['master'][0] == inventory_hostname
+
+- name: dashboard的pod个数
+  debug:
+    msg: "dashboards: {{ dashboard_count }}"
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 执行 kubernetes-dashboard.yml
+  shell: "/opt/k8s/bin/kubectl apply -f /etc/kubernetes/dashboard.yml"
+  when:
+    - groups['master'][0] == inventory_hostname
+    - dashboard_count.stdout_lines[0]|int == 0
+
+- name: 检查metrics-server是否已经部署
+  shell: "/opt/k8s/bin/kubectl get pods -n kube-system | grep -c -i metrics-server"
+  register: metrics_server_count
+  failed_when: "metrics_server_count.rc != 0"
+  when:
+    - groups['master'][0] == inventory_hostname
+
+- name: metrics_server的pod个数
+  debug:
+    msg: "Metrics Server: {{ metrics_server_count }}"
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 执行 metrics-server.yml
+  shell: "/opt/k8s/bin/kubectl apply -f /etc/kubernetes/metrics-server.yml"
+  when:
+    - groups['master'][0] == inventory_hostname
+    - metrics_server_count.stdout_lines[0]|int == 0
+
+- name: 生成以apiserver方式访问dashboard的证书
+  shell: "grep 'client-certificate-data' config |head -n 1|awk '{print $2}' | base64 -d >> kube.crt"
+  args:
+    chdir: /root/.kube/
+    creates: kube.crt
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 生成以apiserver方式访问dashboard的私钥
+  shell: "grep 'client-key-data' config |head -n 1|awk '{print $2}' | base64 -d >> kube.key"
+  args:
+    chdir: /root/.kube/
+    creates: kube.key
+#  ignore_errors: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 安装expect依赖
+  pip:
+    name: pexpect
+
+- name: 合成pkcs12格式的证书文件，供浏览器使用
+  expect:
+    command: /bin/bash -c "openssl pkcs12 -export -clcerts -inkey kube.key -in kube.crt -out kube.p12 -name 'kubernetes-client'"
+    chdir: /root/.kube/
+    creates: kube.p12
+    responses:
+      (?i)password: "1qaz!QAZ"
+  # you don't want to show passwords in your logs
+  no_log: true
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 检查dashboard-login-admin[sa] 是否存在
+  shell: "/opt/k8s/bin/kubectl get sa -n kube-system | grep -c -i dashboard-login-admin"
+  register: dashboard_login_admin_count
+  failed_when: "dashboard_login_admin_count.rc != 0"
+  when:
+    - groups['master'][0] == inventory_hostname
+
+- name: dashboard_login_admin的sa个数
+  debug:
+    msg: "dashboard_login_admin: {{ dashboard_login_admin_count }}"
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 执行 dashboard-login-admin.yml
+  shell: "/opt/k8s/bin/kubectl apply -f /etc/kubernetes/dashboard-login-admin.yml"
+  when:
+    - groups['master'][0] == inventory_hostname
+    - dashboard_login_admin_count.stdout_lines[0]|int == 0
+
+- name: 获取[sa] dashboard_login_admin的 secret token
+  shell: "/opt/k8s/bin/kubectl -n kube-system describe secret $(/opt/k8s/bin/kubectl -n kube-system get secret  | grep dashboard-login-admin |awk '{print $1}')|grep token:|awk '{print $2}'"
+  register: login_token
+  failed_when: "login_token.rc != 0"
+  when:
+    - groups['master'][0] == inventory_hostname
+
+- name: 配置dashboard.kubeconfig - 设置集群参数
+  shell: "/opt/k8s/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/cert/ca.pem --embed-certs=true --server={{ kube_apiserver }} --kubeconfig=dashboard.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+    creates: dashboard.kubeconfig
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 配置dashboard.kubeconfig - 设置客户端认证token
+  shell: "/opt/k8s/bin/kubectl config set-credentials dashboard-login-admin --token={{ login_token.stdout}} --kubeconfig=dashboard.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 配置dashboard.kubeconfig - 设置上下文参数
+  shell: "/opt/k8s/bin/kubectl config set-context default --cluster=kubernetes --user=dashboard-login-admin --kubeconfig=dashboard.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+  when: 'inventory_hostname == groups.master[0]'
+
+- name: 配置dashboard.kubeconfig - 设置默认上下文
+  shell: "/opt/k8s/bin/kubectl config use-context default --kubeconfig=dashboard.kubeconfig"
+  args:
+    chdir: /etc/kubernetes/
+  when: 'inventory_hostname == groups.master[0]'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

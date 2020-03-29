@@ -2,7 +2,8 @@
 
 # 使用nexus oss代理离线环境系统依赖包
 
-# 参考文档[https://github.com/opsnull/follow-me-install-kubernetes-cluste]
+# 参考文档1: [https://github.com/opsnull/follow-me-install-kubernetes-cluste]
+# 参考文档2: [https://github.com/liumiaocn/easypack/]
 
 # 在运行ansible脚本之前需要一些手动的操作
 
@@ -15,9 +16,5 @@
 
 curl -v --user 'admin:admin123' --upload-file ./grafana-5.2.1-1.x86_64.rpm http://192.168.137.124:18081/repository/k8s-local/7/Packages/grafana-5.2.1-1.x86_64.rpm
 
-kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | (grep admin-user || echo "$_") | awk '{print $1}') | grep token: | awk '{print $2}'
-
-
-kubectl config set-credentials admin --token=
 
 
