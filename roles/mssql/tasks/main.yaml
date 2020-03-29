@@ -1,0 +1,12 @@
+---
+
+- name: 安装mssql-server
+  yum:
+    name:
+      - mssql-server
+      - mssql-tools
+      - unixODBC-devel
+    state: present
+
+#- name: 运行mssql-conf配置
+#  shell: "/opt/mssql/bin/mssql-conf setup"

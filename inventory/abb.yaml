@@ -64,6 +64,9 @@ nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
 # nexus docker源代理地址
 nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
 
+# nexus mssql源代理地址
+nexus_mssql_url=http://192.168.0.120:8081/repository/mssql/
+
 # k8s-deploy目录所在目录
 k8s_deploy_path=/root/k8s-deploy
 
@@ -100,6 +103,9 @@ master3.localdomain ansible_host=192.168.0.152 priority=90
 [lb:vars]
 lb_iface=eth0
 master_vip=192.168.0.149
+
+[mssql]
+mssql.localdomain ansible_host=192.168.0.156
 
 
 

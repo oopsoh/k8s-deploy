@@ -53,6 +53,22 @@
     baseurl: "{{ nexus_docker_url }}$basearch/stable"
     gpgcheck: no
 
+- name: 配置nexus mssql server代理
+  yum_repository:
+    name: mssql-server-2017
+    description: Nexus Mssql Server 2017 Repository
+    file: nexus
+    baseurl: "{{ nexus_mssql_url }}"mssql-server-2017/
+    gpgcheck: no
+
+- name: 配置nexus mssql 命令行代理
+  yum_repository:
+    name: mssql-command-tools
+    description: Nexus Mssql Command Tools Repository
+    file: nexus
+    baseurl: "{{ nexus_mssql_url }}"prod/
+    gpgcheck: no
+
 - name: 清空yum缓存
   command: yum clean metadata
   args:
