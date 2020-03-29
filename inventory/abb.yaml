@@ -107,6 +107,22 @@ master_vip=192.168.0.149
 [mssql]
 mssql.localdomain ansible_host=192.168.0.156
 
+[mssql:vars]
+# nexus centos源代理地址
+nexus_base_url=http://192.168.0.120:8081/repository/centos/
+
+# nexus epel源代理地址
+nexus_epel_url=http://192.168.0.120:8081/repository/epel/
+
+# nexus python源代理地址
+nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
+
+# nexus docker源代理地址
+nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
+
+# nexus mssql源代理地址
+nexus_mssql_url=http://192.168.0.120:8081/repository/mssql/
+
 
 
 
