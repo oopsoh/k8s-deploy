@@ -1,5 +1,129 @@
 ---
 
+- name: 创建yum备份文件夹
+  file:
+    path: /etc/yum.repos.d/bak
+    state: directory
+
+- name: 备份系统自带的yum源
+  shell: "mv *.repo ./bak/"
+  args:
+    chdir: /etc/yum.repos.d/
+    creates: nexus.repo
+  ignore_errors: true
+
+- name: 配置nexus centos-base 代理
+  yum_repository:
+    name: centos-base
+    description: Nexus Centos Base Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/os/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-updates 代理
+  yum_repository:
+    name: centos-updates
+    description: Nexus Centos Updates Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/updates/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-extras  代理
+  yum_repository:
+    name: centos-extras
+    description: Nexus Centos Extras Repository
+    file: nexus
+    baseurl: "{{ nexus_base_url }}$releasever/extras/$basearch/"
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+- name: 配置nexus centos-epel 代理
+  yum_repository:
+    name: centos-epel
+    description: Nexus Centos EPEL Repository
+    file: nexus
+    baseurl: "{{ nexus_epel_url }}7/$basearch/"
+    gpgcheck: no
+
+- name: 配置nexus mssql server代理
+  yum_repository:
+    name: mssql-server-2017
+    description: Nexus Mssql Server 2017 Repository
+    file: nexus
+    baseurl: "{{ nexus_mssql_url }}mssql-server-2017/"
+    gpgcheck: no
+
+- name: 配置nexus mssql 命令行代理
+  yum_repository:
+    name: mssql-command-tools
+    description: Nexus Mssql Command Tools Repository
+    file: nexus
+    baseurl: "{{ nexus_mssql_url }}prod/"
+    gpgcheck: no
+
+- name: 清空yum缓存
+  command: yum clean metadata
+  args:
+    warn: no
+
+- name: 安装依赖包
+  yum:
+    name:
+      - curl
+      - sysstat
+      - wget
+      - vim
+      - bash-completion
+      - unzip
+      - lrzsz
+      - net-tools
+      - p7zip
+      - p7zip-plugins
+      - telnet
+    state: present
+
+- name: 关闭防火墙
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: 清理防火墙规则
+  iptables:
+    flush: yes
+
+- name: 关闭selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: 优化内核参数
+  template: 
+    src: mssql-sysctl.conf.j2
+    dest: /etc/sysctl.d/mssql-sysctl.conf
+
+- name: 内核参数生效
+  shell: "sysctl -p /etc/sysctl.d/mssql-sysctl.conf"
+
+- name: 关闭无关服务
+  systemd:
+    name: postfix
+    state: stopped
+    enabled: no
+
+- name: 设置系统时区
+  timezone:
+    name: Asia/Shanghai
+
+- name: 重新启动mssql机器
+  reboot:
+    msg: "reboot after 1m"
+  tags:
+  - reboot
+
 - name: 安装mssql-server
   yum:
     name:
