@@ -64,6 +64,8 @@
     dest: /etc/chrony.conf
   notify:
     - 重新启动chronyd服务
+  tags:
+  - chrony
 
 #- name: 重新启动chronyd
 #  systemd:
