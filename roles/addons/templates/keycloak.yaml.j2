@@ -41,8 +41,8 @@ spec:
               scheme: HTTPS
               path: /
               port: 8443
-            initialDelaySeconds: 30
-            timeoutSeconds: 30
+            initialDelaySeconds: 300
+            timeoutSeconds: 300
           resources:
             requests:
               cpu: 100m
@@ -56,7 +56,7 @@ spec:
             - name: DB_ADDR
               value: {{ mssql_server_ip }}
             - name: DB_PORT
-              value: {{ mssql_server_port }}
+              value: "{{ mssql_server_port }}"
             - name: DB_DATABASE
               value: keycloak
             - name: DB_USER
@@ -79,7 +79,7 @@ spec:
           hostPath:
             path: /opt/keycloak/certs
       nodeSelector:
-        keycloak: true
+        keycloak: keycloak
 
 
 ---
