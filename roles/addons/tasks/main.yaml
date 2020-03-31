@@ -31,7 +31,6 @@
   when:
     - groups['master'][0] == inventory_hostname
     - coredns_count.stdout_lines[0]|int == 0
-  when: 'inventory_hostname == groups.master[0]'
 
 - name: 检查kubernetes-dashboard是否已经部署
   shell: "/opt/k8s/bin/kubectl get pods -n kubernetes-dashboard | grep -c -i dashboard"
@@ -171,15 +170,15 @@
       (?i)password: "1qaz!QAZ"
   when: 'inventory_hostname == groups.worker[2]'
 
-- name: 转pk12格式
-  when: 'inventory_hostname == groups.worker[2]'
+# - name: 转pk12格式
+#   when: 'inventory_hostname == groups.worker[2]'
 
 
-- name: 导出crt
-  when: 'inventory_hostname == groups.worker[2]'
+# - name: 导出crt
+#   when: 'inventory_hostname == groups.worker[2]'
   
-- name: 导出key
-  when: 'inventory_hostname == groups.worker[2]'
+# - name: 导出key
+#  when: 'inventory_hostname == groups.worker[2]'
 
 - name: 分发到worker
   copy:
