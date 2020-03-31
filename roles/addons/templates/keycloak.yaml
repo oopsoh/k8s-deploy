@@ -1,0 +1,110 @@
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keycloak
+  name: keycloak
+  namespace: keycloak
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: jboss/keycloak:
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 8443
+              name: https
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /
+              port: 8443
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          env:
+            - name: DB_VENDOR
+              value: mssql
+            - name: DB_ADDR
+              value: {{ mssql_server_ip }}
+            - name: DB_PORT
+              value: {{ mssql_server_port }}
+            - name: DB_DATABASE
+              value: keycloak
+            - name: DB_USER
+              value: sa
+            - name: DB_PASSWORD
+              value: {{ sa_passwd }}
+            - name: KEYCLOAK_USER
+              value: {{ keycloak_user }}
+            - name: KEYCLOAK_PASSWORD
+              value: {{ keycloak_passwd }}
+            - name: KEYCLOAK_LOGLEVEL
+              value: {{ keycloak_log_level }}
+            - name: ROOT_LOGLEVEL
+              value: {{ root_log_level }}
+          volumeMounts:
+            - name: keycloak-certs
+              mountPath: /etc/x509/https
+      volumes:
+        - name: keycloak-certs
+          hostPath:
+            path: /opt/keycloak/certs
+      nodeSelector:
+        keycloak: true
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: keycloak
+  name: keycloak
+  namespace: keycloak
+spec:
+  type: NodePort
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8443
+      nodePort: 30443
+  selector:
+    app: keycloak          
+          
+          
+          
+          
+        
+          
+          
+          

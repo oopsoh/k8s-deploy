@@ -3,3 +3,25 @@ nexus_ip: 192.168.0.120
 
 # 集群 DNS 服务 IP (从 SERVICE_CIDR 中预分配)
 cluster_dns_svc_ip: 10.254.0.2
+
+
+# mssql server数据库地址
+mssql_server_ip: 192.168.0.156
+
+# mssql server port
+mssql_server_port: 1433
+
+# mssql server 数据库sa密码
+sa_passwd: "1qaz!QAZ"
+
+# keycloak user
+keycloak_user: admin
+
+# keycloak password
+keycloak_passwd: admin
+
+# keycloak log level
+keycloak_log_level: INFO
+
+# keycloak root log level
+root_log_level: INFO

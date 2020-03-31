@@ -1,0 +1,13 @@
+# Choose an edition of SQL Server:
+#  1) Evaluation (free, no production use rights, 180-day limit)
+#  2) Developer (free, no production use rights)
+#  3) Express (free)
+#  4) Web (PAID)
+#  5) Standard (PAID)
+#  6) Enterprise (PAID)
+#  7) Enterprise Core (PAID)
+#  8) I bought a license through a retail sales channel and have a product key to enter.
+
+edition: 2
+
+sa_passwd: "1qaz!QAZ"

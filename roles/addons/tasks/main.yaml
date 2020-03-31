@@ -1,6 +1,6 @@
 ---
 
-- name: 生成coredns yaml文件
+- name: 生成k8s yaml文件
   template: 
     src: "{{ item.src }}"
     dest: "/etc/kubernetes/{{ item.dest }}"
@@ -9,7 +9,10 @@
     - { src: 'dashboard.yaml.j2', dest: 'dashboard.yaml' }
     - { src: 'metrics-server.yaml.j2', dest: 'metrics-server.yaml' }
     - { src: 'dashboard-login-admin.yaml.j2', dest: 'dashboard-login-admin.yaml' }
+    - { src: 'keycloak.yaml.j2', dest: 'keycloak.yaml' }
   when: 'inventory_hostname == groups.master[0]'
+  tags:
+  - yaml
 
 - name: 检查coredns是否已经部署
   shell: "/opt/k8s/bin/kubectl get pods -n kube-system | grep -c -i coredns"
@@ -146,6 +149,51 @@
   args:
     chdir: /etc/kubernetes/
   when: 'inventory_hostname == groups.master[0]'
+
+- name: 为了使用keytool安装openjdk
+  yum:
+    name: java-1.8.0-openjdk-devel
+    state: present
+  when: 'inventory_hostname == groups.worker[2]'
+
+- name: 最后一个worker机器部署keycloak证书目录
+  file:
+    path: /opt/keycloak/certs
+    state: directory
+  when: 'inventory_hostname == groups.worker[2]'
+
+- name: 为keycloak生成keystore.jks
+  expect:
+    command: keytool -genkey -alias keycloak -keyalg RSA -keystore keycloak.jks -validity 10950
+    chdir: /tmp/
+    creates: keycloak.jks
+    responses:
+      (?i)password: "1qaz!QAZ"
+  when: 'inventory_hostname == groups.worker[2]'
+
+- name: 转pk12格式
+  when: 'inventory_hostname == groups.worker[2]'
+
+
+- name: 导出crt
+  when: 'inventory_hostname == groups.worker[2]'
+  
+- name: 导出key
+  when: 'inventory_hostname == groups.worker[2]'
+
+- name: 分发到worker
+  copy:
+    src: /tmp/{{ item }}
+    dest: /opt/keycloak/certs/{{ item }}
+  with_items:
+    - tls.crt
+    - tls.key
+  when: 'inventory_hostname == groups.worker[2]'
+
+
+
+
+
 
 
 

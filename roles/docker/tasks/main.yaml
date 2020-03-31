@@ -57,6 +57,7 @@
    - dashboard:v2.0.0-beta4
    - metrics-scraper:v1.0.1
    - metrics-server-amd64:v0.3.6
+   - keycloak:9.0.2
   tags:
   - images
 

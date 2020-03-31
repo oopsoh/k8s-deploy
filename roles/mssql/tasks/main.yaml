@@ -112,17 +112,51 @@
   systemd:
     name: postfix
     state: stopped
-    enabled: no
+    enabled: nou
 
 - name: 设置系统时区
   timezone:
     name: Asia/Shanghai
+
+- name: 创建.pip文件夹
+  file:
+    path: /root/.pip
+    state: directory
+
+- name: 分发pip.conf文件
+  template:
+    src: pip.conf.j2
+    dest: /root/.pip/pip.conf
+
+- name: 分发easy_install配置
+  template:
+    src: pydistutils.cfg.j2
+    dest: /root/.pydistutils.cfg
+
+- name: 安装pip
+  easy_install:
+    name: pip
+    state: latest
+
+- name: 安装expect依赖
+  pip:
+    name: pexpect
 
 - name: 重新启动mssql机器
   reboot:
     msg: "reboot after 1m"
   tags:
   - reboot
+
+- name: 配置mssql主机host文件
+  lineinfile:
+    path: /etc/hosts
+    line: {{ hostvars[inventory_hostname]['ansible_host'] }} {{ inventory_hostname }}
+
+- name: 配置mssql主机host文件
+  lineinfile:
+    path: /etc/hosts
+    line: {{ hostvars[inventory_hostname]['ansible_host'] }} {{ inventory_hostname_short }}
 
 - name: 安装mssql-server
   yum:
@@ -132,5 +166,65 @@
       - unixODBC-devel
     state: present
 
-#- name: 运行mssql-conf配置
-#  shell: "/opt/mssql/bin/mssql-conf setup"
+- name: 运行mssql-conf配置
+  expect:
+    command: "/opt/mssql/bin/mssql-conf setup"
+    responses:
+      'Enter your edition\(1-8\):': "{{ edition }}"
+      (?i)license: "yes"
+      (?i)password: "{{ sa_passwd | regex_replace('\"')}}"
+    echo: yes
+
+- name: 创建mssql文件夹
+  file:
+    path: /usr/lib/tuned/mssql
+    state: directory
+
+- name: 分发tuned.conf优化文件
+  template:
+    src: tuned.conf.j2
+    dest: /usr/lib/tuned/mssql/tuned.conf
+    mode: "0755"
+
+- name: tuned优化配置生效
+  command: "/usr/sbin/tuned-adm profile mssql"
+
+- name: 启动agent
+  command: "/opt/mssql/bin/mssql-conf set sqlagent.enabled true"
+
+- name: 重新启动mssql-server
+  systemd:
+    name: mssql-server
+    state: restarted
+
+- name: 开启1433端口
+  firewalld:
+    zone: public
+    port: 1433/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: 创建keycloak数据库
+  command: '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "{{ sa_passwd }}" -Q "create database keycloak"'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+

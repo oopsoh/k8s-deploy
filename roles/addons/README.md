@@ -54,3 +54,19 @@ subjects:
 
 所以我们不使用kubernetes-dashboard 这个sa来创建 登录dashboard页面的kubeconfig文件，我们新建一个dashboard-login-admin这样的service account，赋予cluster-admin的权限
 
+## keycloak
+
+generate a self-signed cert using the keytool
+> keytool -genkey -alias keycloak -keyalg RSA -keystore keycloak.jks -validity 10950
+
+convert .jks to .p12
+> keytool -importkeystore -srckeystore keycloak.jks -destkeystore keycloak.p12 -deststoretype PKCS12
+
+generate .crt from .p12 keystore
+> openssl pkcs12 -in keycloak.p12 -nokeys -out tls.crt
+
+generate .key from .p12 keystore
+> openssl pkcs12 -in keycloak.p12 -nocerts -nodes -out tls.key
+
+Then use the tls.crt and tls.key for volume mount /etc/x509/https
+
