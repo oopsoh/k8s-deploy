@@ -71,13 +71,20 @@ spec:
               value: {{ keycloak_log_level }}
             - name: ROOT_LOGLEVEL
               value: {{ root_log_level }}
+            - name: KEYCLOAK_IMPORT
+              value: /tmp/realm-export.json
           volumeMounts:
             - name: keycloak-certs
               mountPath: /etc/x509/https
+            - name: realm
+              mountPath: /tmp/realm-export.json
       volumes:
         - name: keycloak-certs
           hostPath:
             path: /opt/keycloak/certs
+        - name: realm
+          hostPath:
+            path: /opt/keycloak/realm/realm-export.json
       nodeSelector:
         keycloak: keycloak
 

@@ -153,12 +153,15 @@
   yum:
     name: java-1.8.0-openjdk-devel
     state: present
-  when: 'inventory_hostname == groups.worker[2]'
+  when: 'inventory_hostname == groups.master[0]'
 
-- name: 最后一个worker机器部署keycloak证书目录
+- name: 最后一个worker机器部署keycloak目录
   file:
-    path: /opt/keycloak/certs
+    path: "{{ item }}"
     state: directory
+  with_items:
+    - /opt/keycloak/certs
+    - /opt/keycloak/realm
   when: 'inventory_hostname == groups.worker[2]'
 
 - name: 为keycloak生成keystore.jks
@@ -168,25 +171,26 @@
     creates: keycloak.jks
     responses:
       (?i)password: "1qaz!QAZ"
-  when: 'inventory_hostname == groups.worker[2]'
+  when: 'inventory_hostname == groups.master[0]'
 
 # - name: 转pk12格式
-#   when: 'inventory_hostname == groups.worker[2]'
+#   when: 'inventory_hostname == groups.master[0]'
 
 
 # - name: 导出crt
-#   when: 'inventory_hostname == groups.worker[2]'
+#   when: 'inventory_hostname == groups.master[0]'
   
 # - name: 导出key
-#  when: 'inventory_hostname == groups.worker[2]'
+#  when: 'inventory_hostname == groups.master[0]'
 
 - name: 分发到worker
   copy:
-    src: /tmp/{{ item }}
-    dest: /opt/keycloak/certs/{{ item }}
-  with_items:
-    - tls.crt
-    - tls.key
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: '/tmp/tls.crt', dest: '/opt/keycloak/certs/tls.crt' }
+    - { src: '/tmp/tls.key', dest: '/opt/keycloak/certs/tls.key' }
+    - { src: 'realm-export.json', dest: '/opt/keycloak/realm/realm-export.json' }
   when: 'inventory_hostname == groups.worker[2]'
 
 
