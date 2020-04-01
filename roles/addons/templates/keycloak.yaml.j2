@@ -36,6 +36,8 @@ spec:
             - containerPort: 8443
               name: https
               protocol: TCP
+          args:
+            - -Dkeycloak.profile.feature.upload_scripts=enabled
           livenessProbe:
             httpGet:
               scheme: HTTPS
