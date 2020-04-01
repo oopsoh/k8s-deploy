@@ -191,7 +191,10 @@
     - { src: '/tmp/tls.crt', dest: '/opt/keycloak/certs/tls.crt' }
     - { src: '/tmp/tls.key', dest: '/opt/keycloak/certs/tls.key' }
     - { src: 'realm-export.json', dest: '/opt/keycloak/realm/realm-export.json' }
+    - { src: 'standalone.conf', dest: '/opt/keycloak/standalone.conf' }
   when: 'inventory_hostname == groups.worker[2]'
+  tags:
+  - keycloak
 
 
 

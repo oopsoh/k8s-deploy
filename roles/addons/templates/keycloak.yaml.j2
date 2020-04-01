@@ -80,6 +80,8 @@ spec:
               mountPath: /etc/x509/https
             - name: realm
               mountPath: /tmp/realm-export.json
+            - name: standalone
+              mountPath: /opt/jboss/keycloak/bin/standalone.conf
       volumes:
         - name: keycloak-certs
           hostPath:
@@ -87,6 +89,9 @@ spec:
         - name: realm
           hostPath:
             path: /opt/keycloak/realm/realm-export.json
+        - name: standalone
+          hostPath:
+            path: /opt/keycloak/standalone.conf
       nodeSelector:
         keycloak: keycloak
 
