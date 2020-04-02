@@ -1,0 +1,26 @@
+---
+
+- name: Install Rabbitmq packages
+  yum:
+    name:
+      - socat
+      - logrotate
+      - erlang-21.3.* # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
+      - rabbitmq-server-3.7.10
+    state: present
+
+- include_tasks: "set-erlang-cookie.yaml"
+  when: is_clustered and groups['rabbitmq'] | length > 1
+
+- include_tasks: "configure-rabbitmq.yaml"
+
+- include_tasks: "enable-and-start-service.yaml"
+
+- include_tasks: "set-logrotate.yaml"
+
+- include_tasks: "set-ulimits.yaml"
+
+- include_tasks: "join-cluster.yaml"
+  when: is_clustered and groups['rabbitmq'] | length > 1
+
+- include_tasks: "configure-policies.yaml

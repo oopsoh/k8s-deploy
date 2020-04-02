@@ -1,0 +1,13 @@
+  
+/var/log/rabbitmq/*.log {
+        {{ rabbitmq.logrotate_period }}
+        missingok
+        rotate {{ rabbitmq.logrotate_number }}
+        compress
+        delaycompress
+        notifempty
+        sharedscripts
+        postrotate
+            /etc/init.d/rabbitmq-server rotate-logs > /dev/null
+        endscript
+}

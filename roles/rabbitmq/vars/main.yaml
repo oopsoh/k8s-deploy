@@ -1,0 +1,14 @@
+rabbitmq:
+  version: 3.7.10
+  use_longname: true
+  user: rabbitmq
+  group: rabbitmq
+  ulimit_open_files: 65535
+  logrotate_period: weekly
+  logrotate_number: 10
+  port: 5672
+  cluster:
+    is_clustered: false
+    cookie: 
+  plugins: []
+  policies: []

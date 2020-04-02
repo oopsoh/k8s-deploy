@@ -126,7 +126,10 @@ nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
 # nexus mssql源代理地址
 nexus_mssql_url=http://192.168.0.120:8081/repository/mssql/
 
-
+[rabbitmq]
+node1.localdomain ansible_host=192.168.0.153
+node2.localdomain ansible_host=192.168.0.154
+node3.localdomain ansible_host=192.168.0.155
 
 
 
