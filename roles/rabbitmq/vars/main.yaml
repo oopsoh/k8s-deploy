@@ -10,5 +10,8 @@ rabbitmq:
   cluster:
     is_clustered: false
     cookie: 
-  plugins: []
+  custom_configurations: [{"name":"num_acceptors.tcp","value":"10"}]
+  plugins: ["rabbitmq_management"]
   policies: []
+
+  
