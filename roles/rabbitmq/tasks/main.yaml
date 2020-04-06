@@ -14,6 +14,10 @@
 - include_tasks: "set-erlang-cookie.yaml"
   when: is_clustered and groups['rabbitmq'] | length > 1
 
+- name: 升级 jinja2 版本
+  pip:
+    name: jinja2==2.11.1
+
 - include_tasks: "configure-rabbitmq.yaml"
 
 - include_tasks: "set-logrotate.yaml"

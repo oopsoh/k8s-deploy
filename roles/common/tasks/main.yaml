@@ -96,6 +96,10 @@
     name: pip
     state: latest
 
+- name: 升级 jinja2 版本
+  pip:
+    name: jinja2==2.11.1
+
 - name: 分发k8s二进制文件
   copy:
     src: "{{ k8s_deploy_path }}/bin/{{ k8s_version }}/"
