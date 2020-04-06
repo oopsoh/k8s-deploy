@@ -8,7 +8,7 @@ rabbitmq:
   logrotate_number: 10
   port: 5672
   cluster:
-    is_clustered: false
+    is_clustered: true
     cookie: 
   custom_configurations: [{"name":"num_acceptors.tcp","value":"10"}]
   plugins: ["rabbitmq_management"]

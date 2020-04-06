@@ -64,8 +64,8 @@ nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
 # nexus docker源代理地址
 nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
 
-# nexus mssql源代理地址
-nexus_mssql_url=http://192.168.0.120:8081/repository/mssql/
+# nexus yum hosted源代理地址
+nexus_hosted_url=http://192.168.0.120:8081/repository/yum-hosted/
 
 # k8s-deploy目录所在目录
 k8s_deploy_path=/root/k8s-deploy
@@ -120,11 +120,8 @@ nexus_epel_url=http://192.168.0.120:8081/repository/epel/
 # nexus python源代理地址
 nexus_python_url=http://192.168.0.120:8081/repository/python-proxy/
 
-# nexus docker源代理地址
-nexus_docker_url=http://192.168.0.120:8081/repository/docker-ce/
-
-# nexus mssql源代理地址
-nexus_mssql_url=http://192.168.0.120:8081/repository/mssql/
+# nexus yum hosted源代理地址
+nexus_hosted_url=http://192.168.0.120:8081/repository/yum-hosted/
 
 [rabbitmq]
 node1.localdomain ansible_host=192.168.0.153
