@@ -9,7 +9,7 @@ rabbitmq:
   port: 5672
   cluster:
     is_clustered: true
-    cookie: 
+#    cookie: 
   custom_configurations: [{"name":"num_acceptors.tcp","value":"10"}]
   plugins: ["rabbitmq_management"]
   policies: []

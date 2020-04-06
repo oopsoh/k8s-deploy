@@ -1,5 +1,7 @@
 ---
 
+- include_tasks: "set-variables.yaml"
+
 - name: Install Rabbitmq packages
   yum:
     name:
@@ -14,8 +16,6 @@
 
 - include_tasks: "configure-rabbitmq.yaml"
 
-- include_tasks: "enable-and-start-service.yaml"
-
 - include_tasks: "set-logrotate.yaml"
 
 - include_tasks: "set-ulimits.yaml"
@@ -23,4 +23,4 @@
 - include_tasks: "join-cluster.yaml"
   when: is_clustered and groups['rabbitmq'] | length > 1
 
-- include_tasks: "configure-policies.yaml
+- include_tasks: "configure-policies.yaml"
