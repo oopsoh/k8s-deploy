@@ -1,8 +1,10 @@
 ---
-- import_tasks: "cookie-setup/master.yml"
+- name: 设置rabbitmq 主节点cookie
+  import_tasks: cookie-setup/master.yaml
   when:
     - groups['rabbitmq'][0] == inventory_hostname
 
-- import_tasks: "cookie-setup/nodes.yml"
+- name: 设置rabbitmq 从节点cookie
+  import_tasks: cookie-setup/nodes.yaml
   when:
     - groups['rabbitmq'][0] != inventory_hostname
