@@ -1,4 +1,6 @@
 global
+    tune.maxrewrite  32768
+    tune.bufsize    65536
     log 127.0.0.1   local1
     log /dev/log    local1 notice
     chroot /var/lib/haproxy
